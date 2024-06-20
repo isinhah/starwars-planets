@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.spring.sw_planet_api.domain.Planet;
 import com.spring.sw_planet_api.domain.PlanetService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -27,7 +29,7 @@ public class PlanetController {
   private PlanetService planetService;
 
   @PostMapping
-  public ResponseEntity<Planet> create(@RequestBody Planet planet) {
+  public ResponseEntity<Planet> create(@RequestBody @Valid Planet planet) {
     Planet createdPlanet = planetService.create(planet);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdPlanet);
   }

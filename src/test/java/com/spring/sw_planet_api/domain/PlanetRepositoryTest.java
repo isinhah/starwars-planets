@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import static com.spring.sw_planet_api.common.PlanetConstants.PLANET;
 import static com.spring.sw_planet_api.common.PlanetConstants.INVALID_PLANET;
 
-@DataJpaTest // h2 database
+@DataJpaTest
 public class PlanetRepositoryTest {
 
   @Autowired

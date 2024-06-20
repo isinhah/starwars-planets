@@ -19,6 +19,9 @@ public class Planet {
   private String climate;
   private String terrain;
 
+  public Planet() {
+  }
+
   public Planet(Long id, String name, String climate, String terrain) {
     this.id = id;
     this.name = name;

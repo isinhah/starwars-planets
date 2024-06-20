@@ -4,9 +4,14 @@ import static com.spring.sw_planet_api.common.PlanetConstants.PLANET;
 import static com.spring.sw_planet_api.common.PlanetConstants.INVALID_PLANET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -14,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
 
 @ExtendWith(MockitoExtension.class)
 public class PlanetServiceTest {
@@ -75,5 +81,27 @@ public class PlanetServiceTest {
     Optional<Planet> sut = planetService.getByName(PLANET.getName());
 
     assertThat(sut).isEmpty();
+  }
+
+  @Test
+  public void listPlanets_ReturnsAllPlanets() {
+    PLANET.setTerrain("rocky");
+    PLANET.setClimate("arid");
+
+    when(planetRepository.findAll(any(Example.class))).thenReturn(Collections.singletonList(PLANET));
+
+    List<Planet> planets = planetService.list("rocky", "arid");
+
+    assertEquals(1, planets.size());
+    assertEquals(PLANET, planets.get(0));
+  }
+
+  @Test
+  public void listPlanets_ReturnsNoPlanets() {
+    when(planetRepository.findAll(any(Example.class))).thenReturn(Collections.emptyList());
+
+    List<Planet> planets = planetService.list("rocky", "arid");
+
+    assertEquals(0, planets.size());
   }
 }

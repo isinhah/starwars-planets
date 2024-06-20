@@ -3,10 +3,12 @@ package com.spring.sw_planet_api.domain;
 import static com.spring.sw_planet_api.common.PlanetConstants.PLANET;
 import static com.spring.sw_planet_api.common.PlanetConstants.INVALID_PLANET;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -103,5 +105,19 @@ public class PlanetServiceTest {
     List<Planet> planets = planetService.list("rocky", "arid");
 
     assertEquals(0, planets.size());
+  }
+
+  @Test
+  public void removePlanet_WithExistingId_doesNotThrowAnyException() {
+    // Verifique se o código remove não lança exceção
+    assertThatCode(() -> planetService.remove(1L)).doesNotThrowAnyException();
+  }
+
+  @Test
+  public void removePlanet_WithUnexistingId_ThrowsAnyException() {
+    // doThrow (usa em métodos void) exceção e condição do lançamento da exceção
+    doThrow(new RuntimeException()).when(planetRepository).deleteById(99L);
+
+    assertThatThrownBy(() -> planetService.remove(99L)).isInstanceOf(RuntimeException.class);
   }
 }

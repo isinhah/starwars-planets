@@ -27,7 +27,6 @@ public class PlanetRepositoryTest {
 
     Planet sut = testEntityManager.find(Planet.class, planet.getId());
 
-    // validação de cada propriedade
     assertThat(sut).isNotNull();
     assertThat(sut.getName()).isEqualTo(PLANET.getName());
     assertThat(sut.getClimate()).isEqualTo(PLANET.getClimate());
@@ -40,5 +39,14 @@ public class PlanetRepositoryTest {
 
     assertThatThrownBy(() -> planetRepository.save(emptyPlanet)).isInstanceOf(RuntimeException.class);
     assertThatThrownBy(() -> planetRepository.save(INVALID_PLANET)).isInstanceOf(RuntimeException.class);
+  }
+
+  @Test
+  public void createPlanet_WithExistingName_ThrowsException() {
+    Planet planet = testEntityManager.persistFlushFind(PLANET);
+    testEntityManager.detach(planet); // para o entityManager não atualizar
+    planet.setId(null);
+
+    assertThatThrownBy(() -> planetRepository.save(planet)).isInstanceOf(RuntimeException.class);
   }
 }

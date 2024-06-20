@@ -19,7 +19,7 @@ public class Planet {
   private Long id;
 
   @NotEmpty
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String name;
 
   @NotEmpty

@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -86,15 +87,19 @@ public class PlanetServiceTest {
 
   @Test
   public void listPlanets_ReturnsAllPlanets() {
-    PLANET.setTerrain("rocky");
-    PLANET.setClimate("arid");
+    List<Planet> planets = new ArrayList<>() {
+      {
+        add(PLANET);
+      }
+    };
+    Example<Planet> query = QueryBuilder.makeQuery(new Planet(PLANET.getClimate(), PLANET.getTerrain()));
+    when(planetRepository.findAll(query)).thenReturn(planets);
 
-    when(planetRepository.findAll(any(Example.class))).thenReturn(Collections.singletonList(PLANET));
+    List<Planet> sut = planetService.list(PLANET.getTerrain(), PLANET.getClimate());
 
-    List<Planet> planets = planetService.list("rocky", "arid");
-
-    assertEquals(1, planets.size());
-    assertEquals(PLANET, planets.get(0));
+    assertThat(sut).isNotEmpty();
+    assertThat(sut).hasSize(1);
+    assertThat(sut.get(0)).isEqualTo(PLANET);
   }
 
   @Test
@@ -108,13 +113,11 @@ public class PlanetServiceTest {
 
   @Test
   public void removePlanet_WithExistingId_doesNotThrowAnyException() {
-    // Verifique se o código remove não lança exceção
     assertThatCode(() -> planetService.remove(1L)).doesNotThrowAnyException();
   }
 
   @Test
   public void removePlanet_WithUnexistingId_ThrowsAnyException() {
-    // doThrow (usa em métodos void) exceção e condição do lançamento da exceção
     doThrow(new RuntimeException()).when(planetRepository).deleteById(99L);
 
     assertThatThrownBy(() -> planetService.remove(99L)).isInstanceOf(RuntimeException.class);

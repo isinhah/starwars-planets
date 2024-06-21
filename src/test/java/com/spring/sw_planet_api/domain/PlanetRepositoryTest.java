@@ -3,6 +3,7 @@ package com.spring.sw_planet_api.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.h2.table.Plan;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +76,23 @@ public class PlanetRepositoryTest {
   @Test
   public void getPlanet_ByUnexistingId_ReturnsNotFound() throws Exception {
     Optional <Planet> planetOpt = planetRepository.findById(1L);
+
+    assertThat(planetOpt).isEmpty();
+  }
+
+  @Test
+  public void getPlanet_ByExistingName_ReturnsPlanet() throws Exception {
+    Planet planet = testEntityManager.persistFlushFind(PLANET);
+
+    Optional<Planet> planetOpt = planetRepository.findByName(planet.getName());
+
+    assertThat(planetOpt).isNotEmpty();
+    assertThat(planetOpt.get()).isEqualTo(planet);
+  }
+
+  @Test
+  public void getPlanet_ByUnexistingName_ReturnsPlanet() throws Exception {
+    Optional <Planet> planetOpt = planetRepository.findByName("name");
 
     assertThat(planetOpt).isEmpty();
   }

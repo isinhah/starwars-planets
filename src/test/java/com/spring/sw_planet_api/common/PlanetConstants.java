@@ -5,20 +5,20 @@ import com.spring.sw_planet_api.domain.Planet;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class PlanetConstants {
   public static final Planet PLANET = new Planet("name", "climate", "terrain");
-
   public static final Planet INVALID_PLANET = new Planet("", "", "");
 
   public static final Planet TATOOINE = new Planet(1L, "Tatooine", "arid", "desert");
-  public static final Planet HOTH = new Planet(2L,"Hoth", "frozen", "tundra, ice caves, mountain ranges");
-  public static final Planet ENDOR = new Planet(3L, "Endor", "temperate", "forests, mountains, lakes");
-
+  public static final Planet ALDERAAN = new Planet(2L, "Alderaan", "temperate", "grasslands, mountains");
+  public static final Planet YAVINIV = new Planet(3L, "Yavin IV", "temperate, tropical", "jungle, rainforests");
   public static final List<Planet> PLANETS = new ArrayList<>() {
     {
       add(TATOOINE);
-      add(HOTH);
-      add(ENDOR);
+      add(ALDERAAN);
+      add(YAVINIV);
     }
   };
 }
+

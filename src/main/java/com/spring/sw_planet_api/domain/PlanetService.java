@@ -29,16 +29,7 @@ public class PlanetService {
   }
 
   public List<Planet> list(String terrain, String climate) {
-    Planet planet = new Planet();
-    planet.setTerrain(terrain);
-    planet.setClimate(climate);
-
-    ExampleMatcher matcher = ExampleMatcher.matchingAll()
-        .withIgnoreCase()
-        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-
-    Example<Planet> query = Example.of(planet, matcher);
-
+    Example<Planet> query = QueryBuilder.makeQuery(new Planet(climate, terrain));
     return planetRepository.findAll(query);
   }
 

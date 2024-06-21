@@ -1,24 +1,20 @@
 package com.spring.sw_planet_api.domain;
 
+import static com.spring.sw_planet_api.common.PlanetConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.h2.table.Plan;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Example;
+import org.springframework.test.context.jdbc.Sql;
 
+
+import java.util.List;
 import java.util.Optional;
-
-import static com.spring.sw_planet_api.common.PlanetConstants.PLANET;
-import static com.spring.sw_planet_api.common.PlanetConstants.INVALID_PLANET;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DataJpaTest
 public class PlanetRepositoryTest {
@@ -95,5 +91,30 @@ public class PlanetRepositoryTest {
     Optional <Planet> planetOpt = planetRepository.findByName("name");
 
     assertThat(planetOpt).isEmpty();
+  }
+
+  @Sql(scripts = "/import_planets.sql")
+  @Test
+  public void listPlanets_ReturnsFilteredPlanets() {
+    Example<Planet> queryWithoutFilters = QueryBuilder.makeQuery(new Planet());
+    Example<Planet> queryWithFilters = QueryBuilder.makeQuery(new Planet(TATOOINE.getClimate(), TATOOINE.getTerrain()));
+
+    List<Planet> responseWithoutFilters = planetRepository.findAll(queryWithoutFilters);
+    List<Planet> responseWithFilters = planetRepository.findAll(queryWithFilters);
+
+    assertThat(responseWithoutFilters).isNotEmpty();
+    assertThat(responseWithoutFilters).hasSize(3);
+    assertThat(responseWithFilters).isNotEmpty();
+    assertThat(responseWithFilters).hasSize(1);
+    assertThat(responseWithFilters.get(0)).isEqualTo(TATOOINE);
+  }
+
+  @Test
+  public void listPlanets_ReturnsNoPlanets() {
+    Example<Planet> query = QueryBuilder.makeQuery(new Planet());
+
+    List<Planet> response = planetRepository.findAll(query);
+
+    assertThat(response).isEmpty();
   }
 }

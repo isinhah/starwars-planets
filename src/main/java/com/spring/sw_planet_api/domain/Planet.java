@@ -1,5 +1,6 @@
 package com.spring.sw_planet_api.domain;
 
+import com.spring.sw_planet_api.jacoco.ExcludeFromJacocoGeneratedReport;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import jakarta.persistence.Column;
@@ -90,9 +91,9 @@ public class Planet {
     return EqualsBuilder.reflectionEquals(obj, this);
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public String toString() {
     return "Planet [id=" + id + ", name=" + name + ", climate=" + climate + ", terrain=" + terrain + "]";
   }
-
 }

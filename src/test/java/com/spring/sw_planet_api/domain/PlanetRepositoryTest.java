@@ -3,11 +3,15 @@ package com.spring.sw_planet_api.domain;
 import static com.spring.sw_planet_api.common.PlanetConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -18,6 +22,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @DataJpaTest
 public class PlanetRepositoryTest {
@@ -44,13 +49,29 @@ public class PlanetRepositoryTest {
     assertThat(sut.getTerrain()).isEqualTo(PLANET.getTerrain());
   }
 
-  @Test
-  public void createPlanet_WithInvalidData_ThrowsException() {
-    Planet emptyPlanet = new Planet();
-    Planet invalidPlanet = new Planet("", "", "");
+  @ParameterizedTest
+  @MethodSource("providesInvalidPlanets")
+  public void createPlanet_WithInvalidData_ThrowsException(Planet planet) {
+    assertThatThrownBy(() -> planetRepository.save(planet)).isInstanceOf(RuntimeException.class);
+  }
 
-    assertThatThrownBy(() -> planetRepository.save(emptyPlanet)).isInstanceOf(RuntimeException.class);
-    assertThatThrownBy(() -> planetRepository.save(invalidPlanet)).isInstanceOf(RuntimeException.class);
+  private static Stream<Arguments> providesInvalidPlanets() {
+    return Stream.of(
+            arguments(new Planet("name", null, "terrain")),
+            arguments(new Planet("name", "terrain", null)),
+            arguments(new Planet(null, "climate", "terrain")),
+            arguments(new Planet(null, null, null)),
+            arguments(new Planet("name", null, null)),
+            arguments(new Planet(null, "climate", null)),
+            arguments(new Planet(null, null, "terrain")),
+            arguments(new Planet("", "", "")),
+            arguments(new Planet("name", "climate", "")),
+            arguments(new Planet("name", "", "terrain")),
+            arguments(new Planet("", "climate", "terrain")),
+            arguments(new Planet("name", "", "")),
+            arguments(new Planet("", "climate", "")),
+            arguments(new Planet("", "", "terrain"))
+    );
   }
 
   @Test
